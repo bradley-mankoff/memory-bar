@@ -33,7 +33,7 @@ Disk space used as overflow when RAM is full.
 _Avoid_: Swap
 
 **Memory Pressure**:
-How hard the Mac works to manage RAM, shown as a graph with green, yellow, and red zones.
+How hard the Mac works to manage RAM. Its green, yellow, and red bands decide the Bar label color. The popup shows no pressure widget.
 _Avoid_: Pressure
 
 **Process Name**:
