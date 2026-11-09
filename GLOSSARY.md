@@ -37,7 +37,7 @@ How hard the Mac works to manage RAM, shown as a graph with green, yellow, and r
 _Avoid_: Pressure
 
 **Process Name**:
-The name of a running process as Activity Monitor shows it.
+The name of a running process as Activity Monitor shows it, except browser web content rows which show the app content label such as Safari Web Content.
 _Avoid_: Process, app name
 
 **Memory footprint**:
