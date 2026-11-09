@@ -14,4 +14,9 @@ final class MemoryFormatTests: XCTestCase {
         XCTAssertEqual(MemoryFormat.bytes(0), "0 bytes")
         XCTAssertEqual(MemoryFormat.bytes(512), "512 bytes")
     }
+
+    func testMemoryFootprintShowsUnavailableWhenNoSourceCouldMeasureIt() {
+        XCTAssertEqual(MemoryFormat.footprint(2_500_000_000), "2.33 GB")
+        XCTAssertEqual(MemoryFormat.footprint(nil), "Unavailable")
+    }
 }

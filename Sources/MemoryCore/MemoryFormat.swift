@@ -20,4 +20,12 @@ public enum MemoryFormat {
     public static func percent(_ fraction: Double) -> String {
         "\(Int((fraction * 100).rounded()))%"
     }
+
+    /// The Memory footprint column: the size, or "Unavailable" when no source
+    /// could measure the process, such as a protected process that is missing
+    /// from the `top` sample.
+    public static func footprint(_ bytes: UInt64?) -> String {
+        guard let bytes else { return "Unavailable" }
+        return self.bytes(bytes)
+    }
 }

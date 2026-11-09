@@ -1,6 +1,7 @@
-/// Fixed sample readings for the shell, shaped like Activity Monitor on the
-/// 64GB Mac: 47GB Memory Used (30 App + 8 Wired + 9 Compressed), 46 percent
-/// Total CPU Used, and six processes for the list and Search field.
+/// Fixed sample readings for the parts of the popup whose live sources have
+/// not landed yet: the Activity Monitor totals on the 64GB Mac, 47GB Memory
+/// Used (30 App + 8 Wired + 9 Compressed) and 46 percent Total CPU Used. The
+/// process rows are live, so this sample has none.
 public enum SampleData {
     public static func snapshot() -> MemorySnapshot {
         MemorySnapshot(
@@ -15,14 +16,7 @@ public enum SampleData {
                 memoryPressure: .warning
             ),
             totalCPUUsed: 0.46,
-            processes: [
-                MemoryProcess(name: "Xcode", footprintBytes: 6 * MemoryBytes.gigabyte + 4 * MemoryBytes.gigabyte / 10),
-                MemoryProcess(name: "Safari", footprintBytes: 3 * MemoryBytes.gigabyte + 2 * MemoryBytes.gigabyte / 10),
-                MemoryProcess(name: "kernel_task", footprintBytes: 2 * MemoryBytes.gigabyte + MemoryBytes.gigabyte / 2),
-                MemoryProcess(name: "WindowServer", footprintBytes: 1 * MemoryBytes.gigabyte + 8 * MemoryBytes.gigabyte / 10),
-                MemoryProcess(name: "Terminal", footprintBytes: 900 * MemoryBytes.megabyte),
-                MemoryProcess(name: "Finder", footprintBytes: 400 * MemoryBytes.megabyte),
-            ]
+            processes: []
         )
     }
 }

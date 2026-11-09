@@ -5,4 +5,5 @@ public enum MemoryBytes {
     public static let kilobyte: UInt64 = 1_024
     public static let megabyte: UInt64 = 1_048_576
     public static let gigabyte: UInt64 = 1_073_741_824
+    public static let terabyte: UInt64 = 1_099_511_627_776
 }

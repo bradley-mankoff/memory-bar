@@ -6,14 +6,28 @@ struct ContentView: View {
     @ObservedObject var store: MemoryStore
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        let processes = store.visibleProcesses
+        return VStack(alignment: .leading, spacing: 0) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
+                // Lazy so the popup builds only the rows on screen; the list
+                // holds about 1,240 processes on the test Mac.
+                LazyVStack(alignment: .leading, spacing: 2) {
                     totalsSection
+                        .padding(.bottom, 10)
                     Divider()
                     pressureSection
+                        .padding(.vertical, 10)
                     Divider()
-                    processSection
+                    processHeader
+                        .padding(.top, 10)
+                        .padding(.bottom, 4)
+                    if processes.isEmpty {
+                        emptyProcesses
+                    } else {
+                        ForEach(processes) { process in
+                            processRow(process)
+                        }
+                    }
                 }
                 .padding(12)
             }
@@ -81,7 +95,7 @@ struct ContentView: View {
         }
     }
 
-    private var processSection: some View {
+    private var processHeader: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Processes").font(.headline)
             TextField("Search", text: $store.searchText)
@@ -93,35 +107,51 @@ struct ContentView: View {
             }
             .font(.caption)
             .foregroundColor(.secondary)
-            if store.visibleProcesses.isEmpty {
-                Text("No matching processes")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            ForEach(store.visibleProcesses) { process in
-                HStack {
-                    Text(process.name)
-                        .font(.callout)
-                        .lineLimit(1)
-                    Spacer()
-                    Text(MemoryFormat.bytes(process.footprintBytes))
-                        .font(.callout)
-                        .monospacedDigit()
-                }
-            }
         }
     }
 
-    private var footer: some View {
-        HStack {
-            Text("Sample data \u{00B7} Updated \(store.lastUpdated.formatted(date: .omitted, time: .standard))")
-                .font(.caption)
-                .foregroundColor(.secondary)
+    private var emptyProcesses: some View {
+        Text(store.hasReadProcesses ? "No matching processes" : "Reading processes\u{2026}")
+            .font(.caption)
+            .foregroundColor(.secondary)
+    }
+
+    private func processRow(_ process: MemoryProcess) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(process.name)
+                .font(.callout)
+                .lineLimit(1)
+                .truncationMode(.middle)
+            Spacer(minLength: 8)
+            Text(MemoryFormat.footprint(process.footprintBytes))
+                .font(.callout)
                 .monospacedDigit()
+                .foregroundColor(process.footprintBytes == nil ? .secondary : .primary)
+        }
+        .padding(.vertical, 1)
+    }
+
+    private var footer: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Live processes \u{00B7} Updated \(store.lastUpdated.formatted(date: .omitted, time: .standard))")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .monospacedDigit()
+                Text(footerNote)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
             Spacer()
-            Button("Refresh") { store.refresh() }
+            Button("Refresh") { store.refresh(forceTopSample: true) }
             Button("Quit") { NSApp.terminate(nil) }
         }
         .padding(8)
+    }
+
+    private var footerNote: String {
+        store.sizesAreApproximate
+            ? "Totals are sample data \u{00B7} Sizes approximate"
+            : "Totals are sample data"
     }
 }
