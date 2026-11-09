@@ -8,8 +8,10 @@ public enum MemoryPressure: Equatable, Sendable {
 }
 
 /// Activity Monitor's Memory tab totals, in bytes. `memoryUsed` is the total
-/// shown at the top; `appMemory`, `wiredMemory` and `compressed` are its
-/// breakdown, and `physicalMemory`, `cachedFiles` and `swapUsed` sit beside it.
+/// shown at the top; `physicalMemory`, `cachedFiles`, `swapUsed`, `appMemory`,
+/// `wiredMemory` and `compressed` are the size rows beneath it. On macOS 26
+/// those rows do not add up to `memoryUsed`; `LiveTotals` holds the formula the
+/// window uses.
 public struct MemoryTotals: Equatable, Sendable {
     public var memoryUsed: UInt64
     public var physicalMemory: UInt64
@@ -41,8 +43,9 @@ public struct MemoryTotals: Equatable, Sendable {
     }
 }
 
-/// One reading of the Mac: the totals, Total CPU Used as a fraction, and the
-/// process rows. Until the live readers land this comes from `SampleData`.
+/// One reading of the Mac: the live Memory tab totals, Total CPU Used as a
+/// fraction (still the Spec's sample until memory_bar-13m.4), and the process
+/// rows.
 public struct MemorySnapshot: Equatable, Sendable {
     public var totals: MemoryTotals
     public var totalCPUUsed: Double

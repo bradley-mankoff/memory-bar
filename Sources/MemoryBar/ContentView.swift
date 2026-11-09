@@ -15,9 +15,6 @@ struct ContentView: View {
                     totalsSection
                         .padding(.bottom, 10)
                     Divider()
-                    pressureSection
-                        .padding(.vertical, 10)
-                    Divider()
                     processHeader
                         .padding(.top, 10)
                         .padding(.bottom, 4)
@@ -61,37 +58,6 @@ struct ContentView: View {
             Text(value)
                 .font(emphasized ? .headline : .callout)
                 .monospacedDigit()
-        }
-    }
-
-    /// Activity Monitor's Memory Pressure graph: a green, yellow and red band
-    /// with a marker in the zone of the current pressure.
-    private var pressureSection: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Memory Pressure").font(.headline)
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    HStack(spacing: 0) {
-                        Rectangle().fill(Color.green.opacity(0.7))
-                        Rectangle().fill(Color.yellow.opacity(0.7))
-                        Rectangle().fill(Color.red.opacity(0.7))
-                    }
-                    .clipShape(Capsule())
-                    Circle()
-                        .fill(Color.primary)
-                        .frame(width: 8, height: 8)
-                        .offset(x: geo.size.width * pressurePosition - 4)
-                }
-            }
-            .frame(height: 8)
-        }
-    }
-
-    private var pressurePosition: CGFloat {
-        switch store.snapshot.totals.memoryPressure {
-        case .normal: return 0.18
-        case .warning: return 0.5
-        case .critical: return 0.85
         }
     }
 
@@ -151,7 +117,7 @@ struct ContentView: View {
 
     private var footerNote: String {
         store.sizesAreApproximate
-            ? "Totals are sample data \u{00B7} Sizes approximate"
-            : "Totals are sample data"
+            ? "Live memory totals \u{00B7} Sizes approximate"
+            : "Live memory totals"
     }
 }

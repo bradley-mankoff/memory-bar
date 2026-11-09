@@ -4,7 +4,13 @@ import MemoryCore
 
 @MainActor
 final class MemoryStore: ObservableObject {
-    @Published private(set) var snapshot = SampleData.snapshot()
+    @Published private(set) var snapshot = MemorySnapshot(
+        totals: LiveTotals.read(),
+        // Total CPU Used is still the Spec's sample until memory_bar-13m.4
+        // reads the host CPU load.
+        totalCPUUsed: 0.46,
+        processes: []
+    )
     @Published var searchText = ""
     @Published private(set) var lastUpdated = Date()
     /// True once the first live reading has replaced the empty sample rows.
@@ -37,11 +43,12 @@ final class MemoryStore: ObservableObject {
         ProcessList.filtered(snapshot.processes, search: searchText)
     }
 
-    /// Replaces the process rows with a live reading. The read runs off the
-    /// main thread because a fresh `top` sample costs about half a second,
-    /// while the popup refreshes every three seconds. The totals stay sample
-    /// data until their live reader lands.
+    /// Replaces the process rows with a live reading and the totals with the
+    /// counters read now. The process read runs off the main thread because a
+    /// fresh `top` sample costs about half a second, while the popup refreshes
+    /// every three seconds; the totals are cheap enough to read on the spot.
     func refresh(forceTopSample: Bool = false) {
+        snapshot.totals = LiveTotals.read()
         guard !isRefreshInFlight else { return }
         isRefreshInFlight = true
         let now = Date()
