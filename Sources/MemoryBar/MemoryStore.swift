@@ -33,7 +33,10 @@ final class MemoryStore: ObservableObject {
     }
 
     var barColor: MemoryColor {
-        MemoryColor(forUsedMemory: snapshot.totals.memoryUsed)
+        MemoryColor(
+            forUsedMemory: snapshot.totals.memoryUsed,
+            physicalMemory: snapshot.totals.physicalMemory
+        )
     }
 
     /// The ranked rows narrowed by the Search field. The rows arrive already
