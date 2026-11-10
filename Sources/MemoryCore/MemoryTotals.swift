@@ -43,9 +43,8 @@ public struct MemoryTotals: Equatable, Sendable {
     }
 }
 
-/// One reading of the Mac: the live Memory tab totals, Total CPU Used as a
-/// fraction (still the Spec's sample until memory_bar-13m.4), and the process
-/// rows.
+/// One reading of the Mac: the live Memory tab totals, live Total CPU Used as
+/// a fraction, and the process rows.
 public struct MemorySnapshot: Equatable, Sendable {
     public var totals: MemoryTotals
     public var totalCPUUsed: Double

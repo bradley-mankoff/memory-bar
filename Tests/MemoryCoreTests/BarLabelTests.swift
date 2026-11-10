@@ -23,4 +23,17 @@ final class BarLabelTests: XCTestCase {
             "47G \u{00B7} 47%"
         )
     }
+
+    func testBarLabelShowsLiveTotalCPUUsedAsAWholePercent() throws {
+        // The worked example from LiveCPUTests: 350 of 1,000 elapsed ticks
+        // were used, so the Bar label reads 35 percent.
+        let totalUsed = try XCTUnwrap(
+            CPUTicks(user: 1_230, system: 620, idle: 8_650, nice: 0)
+                .totalUsed(since: CPUTicks(user: 1_000, system: 500, idle: 8_000, nice: 0))
+        )
+        XCTAssertEqual(
+            BarLabel.text(used: 47 * MemoryBytes.gigabyte, totalCPUUsed: totalUsed),
+            "47G \u{00B7} 35%"
+        )
+    }
 }

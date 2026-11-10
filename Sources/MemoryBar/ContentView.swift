@@ -117,7 +117,7 @@ struct ContentView: View {
 
     private var footerNote: String {
         store.sizesAreApproximate
-            ? "Live memory totals \u{00B7} Sizes approximate"
-            : "Live memory totals"
+            ? "Live totals \u{00B7} Sizes approximate"
+            : "Live totals"
     }
 }

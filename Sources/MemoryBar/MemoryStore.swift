@@ -6,9 +6,7 @@ import MemoryCore
 final class MemoryStore: ObservableObject {
     @Published private(set) var snapshot = MemorySnapshot(
         totals: LiveTotals.read(),
-        // Total CPU Used is still the Spec's sample until memory_bar-13m.4
-        // reads the host CPU load.
-        totalCPUUsed: 0.46,
+        totalCPUUsed: 0,
         processes: []
     )
     @Published var searchText = ""
@@ -19,6 +17,7 @@ final class MemoryStore: ObservableObject {
 
     private var timer: Timer?
     private let refreshInterval: TimeInterval = 3
+    private var cpuSampler = CPUUsageSampler()
     private var topCache = TopFootprintCache()
     private var isRefreshInFlight = false
 
@@ -43,12 +42,17 @@ final class MemoryStore: ObservableObject {
         ProcessList.filtered(snapshot.processes, search: searchText)
     }
 
-    /// Replaces the process rows with a live reading and the totals with the
-    /// counters read now. The process read runs off the main thread because a
-    /// fresh `top` sample costs about half a second, while the popup refreshes
-    /// every three seconds; the totals are cheap enough to read on the spot.
+    /// Replaces the process rows with a live reading and the totals and Total
+    /// CPU Used with the counters read now. The process read runs off the main
+    /// thread because a fresh `top` sample costs about half a second, while the
+    /// popup refreshes every three seconds; the totals and CPU ticks are cheap
+    /// enough to read on the spot. Refresh calls this directly, so the button
+    /// refetches without waiting for the timer.
     func refresh(forceTopSample: Bool = false) {
         snapshot.totals = LiveTotals.read()
+        if let ticks = LiveCPU.read() {
+            snapshot.totalCPUUsed = cpuSampler.sample(ticks)
+        }
         guard !isRefreshInFlight else { return }
         isRefreshInFlight = true
         let now = Date()
