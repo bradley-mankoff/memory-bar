@@ -59,3 +59,19 @@ _Avoid_: Title, label
 **Search field**:
 A text box that filters the process list by case insensitive substring on Process Name.
 _Avoid_: Search, filter
+
+**Memory Use Sample**:
+One reading of Memory Used, App Memory, Wired Memory, Compressed, and the ten largest processes by Memory footprint, stored about once a minute.
+_Avoid_: Snapshot, reading
+
+**Memory Use Record**:
+The rolling day of Memory Use Samples on disk, capped at 2 MiB, that answers which processes released memory when Memory Used fell.
+_Avoid_: Log, history
+
+**Memory Drop**:
+A fall in Memory Used of at least one gigabyte between two Memory Use Samples, with the processes whose Memory footprint shrank or left the top list.
+_Avoid_: Decrease, release
+
+**Memory Release**:
+The Memory footprint one process gave back between two Memory Use Samples, by shrinking or by leaving the top list. A Memory Drop holds one Memory Release for each process its top list names.
+_Avoid_: Drop, decrease

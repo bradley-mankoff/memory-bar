@@ -20,6 +20,8 @@ final class MemoryStore: ObservableObject {
     private var cpuSampler = CPUUsageSampler()
     private var topCache = TopFootprintCache()
     private var isRefreshInFlight = false
+    /// The rolling day of memory use, loaded so the window outlives a restart.
+    private var memoryUseRecord = MemoryUseRecordFile.load(from: MemoryUseRecordFile.defaultURL)
 
     init() {
         refresh()
@@ -69,6 +71,25 @@ final class MemoryStore: ObservableObject {
             self.hasReadProcesses = true
             self.lastUpdated = Date()
             self.isRefreshInFlight = false
+            self.recordMemoryUse(at: now)
+        }
+    }
+
+    /// Stores one sample of the totals and the top processes when the record is
+    /// due, which its one-a-minute interval decides. The sample reuses the rows
+    /// this refresh already read, so recording adds no subprocess and no second
+    /// process-table read; only the once-a-minute whole-file write leaves the
+    /// main thread.
+    private func recordMemoryUse(at time: Date) {
+        guard memoryUseRecord.record(
+            at: time,
+            totals: snapshot.totals,
+            processes: snapshot.processes
+        ) else { return }
+        let record = memoryUseRecord
+        let url = MemoryUseRecordFile.defaultURL
+        Task.detached(priority: .utility) {
+            try? MemoryUseRecordFile.save(record, to: url)
         }
     }
 
