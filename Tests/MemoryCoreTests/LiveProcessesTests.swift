@@ -12,9 +12,11 @@ final class LiveProcessesTests: XCTestCase {
         let kernel = try XCTUnwrap(rows.first { $0.pid == 0 }, "kernel_task is missing from the live list")
         XCTAssertEqual(kernel.name, "kernel_task")
         let bytes = try XCTUnwrap(kernel.footprintBytes, "kernel_task has no footprint")
-        XCTAssertGreaterThan(bytes, 20 * MemoryBytes.gigabyte)
-        // A plain `top` prints kernel_task as 21G and would flag the sample as
-        // approximate, so this is what proves the whole-MiB cell was read.
+        XCTAssertGreaterThan(bytes, 0)
+        // A plain `top` prints a large kernel_task in whole gigabytes (such as
+        // 21G) and would flag the sample as approximate, so this is what
+        // proves the whole-MiB cell was read. The size itself depends on the
+        // Mac, so the test asks only that there is one.
         XCTAssertFalse(top.isApproximate)
     }
 
